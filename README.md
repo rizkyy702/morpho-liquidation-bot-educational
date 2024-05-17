@@ -74,21 +74,16 @@ In the first terminal, start a local Hardhat node:
 npx hardhat node --show-stack-traces
 ```
 
-### Deploy the Liquidator Contract
-
-In the second terminal, deploy the Liquidator contract to the local network:
-
-```sh
-npx hardhat run --network localhost scripts/deployLiquidatorContract.ts
-```
-
 ### Run Tests
 
-In the third terminal, run the tests to verify the liquidation bot:
+In the second terminal, run the tests to verify the liquidation bot:
 
 ```sh
 npx hardhat test --network localhost --show-stack-traces
 ```
+
+You should have those results:
+![Naive Liquidation Results](./images/resultsNaiveLiquidation.png)
 
 ## Contributing
 
