@@ -92,8 +92,3 @@ Feel free to contribute to this project by submitting issues or pull requests. A
 ## License
 
 This project is licensed under the MIT License - see the (incoming) [LICENSE](LICENSE) file for details.
-
-TODO:
-
-- artifacts weird:
-- JSON question (tutorial maybe not necessary)
