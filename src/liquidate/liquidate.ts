@@ -242,6 +242,7 @@ export const liquidateUsers = async (
     );
     const gainsUsdNormalized: string = formatUnits(gainsUsd, 18);
 
+    // Wait for 1 second to avoid rate limiting
     await sleep(1000);
 
     results.push({
