@@ -1,11 +1,5 @@
-import { BLUE_API } from "./constants";
-
-export type Asset = {
-  address: string;
-  decimals: bigint;
-  symbol: string;
-  priceUsd: number;
-};
+import { BLUE_API } from "../utils/constants";
+import { Asset } from "../utils/types";
 
 const assetDataQuery = (address: string): string => {
   return `

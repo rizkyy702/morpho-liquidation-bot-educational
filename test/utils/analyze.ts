@@ -1,7 +1,7 @@
 import { ERC20__factory, MorphoBlue__factory } from "ethers-types";
 import { MORPHO_ADDRESS } from "../../src/utils/constants";
 import { Provider, formatUnits, parseUnits } from "ethers";
-import { fetchAssetData } from "../../src/utils/queryAssets";
+import { fetchAssetData } from "../../src/fetcher/queryAssets";
 import { wMulDown } from "../../src/utils/maths";
 
 const fetchTokenBalance = async (

@@ -1,5 +1,12 @@
 import { MorphoBlue } from "ethers-types";
 
+export type Asset = {
+  address: string;
+  decimals: bigint;
+  symbol: string;
+  priceUsd: number;
+};
+
 export type MarketState = {
   totalSupplyAssets: bigint;
   totalSupplyShares: bigint;

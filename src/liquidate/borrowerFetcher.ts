@@ -3,6 +3,7 @@ import { getProvider, morphoContracts } from "../fetcher/fetch";
 import fs from "fs";
 import path from "path";
 import { MorphoBlue } from "ethers-types";
+import { MORPHO_BLUE_MAINNET_DEPLOYMENT_BLOCK } from "../utils/constants";
 
 // Interface for MorphoBlue contract
 export interface Contracts {
@@ -54,7 +55,7 @@ async function fetchBorrowersForMarket(
 export const compileBorrowersPerMarket = async (
   whitelist: string[],
   provider?: Provider,
-  from = 18883124,
+  from = MORPHO_BLUE_MAINNET_DEPLOYMENT_BLOCK,
   endBlock?: number
 ): Promise<void> => {
   provider ??= getProvider();
