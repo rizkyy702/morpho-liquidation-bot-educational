@@ -8,7 +8,6 @@ import {IMorphoLiquidateCallback} from "../lib/morpho-blue/src/interfaces/IMorph
 import {SafeTransferLib, ERC20} from "../lib/solmate/src/utils/SafeTransferLib.sol";
 
 contract Liquidator is IMorphoLiquidateCallback {
-
     using SafeTransferLib for ERC20;
 
     event LiquidationEvent(string message, uint256 value);
@@ -39,7 +38,7 @@ contract Liquidator is IMorphoLiquidateCallback {
         bytes calldata data
     ) external {
         IMorpho(MORPHO_BLUE).liquidate(marketParams, borrower, seizedAssets, repaidShares, data);
-        
+
         emit LiquidationEvent("Liquidation successful", seizedAssets);
 
         // Ensure no tokens remains on the Liquidator.
@@ -54,7 +53,7 @@ contract Liquidator is IMorphoLiquidateCallback {
         SwapDescription memory desc = _readOneinchData(data);
 
         desc.srcToken.safeApprove(AGGREGATION_ROUTER_V6, desc.amount);
-        desc.dstToken.safeApprove(msg.sender, repaidAssets);
+        desc.dstToken.safeApprove(MORPHO_BLUE, repaidAssets);
 
         (bool succ, bytes memory _returnData) = AGGREGATION_ROUTER_V6.call(data);
 
@@ -73,7 +72,7 @@ contract Liquidator is IMorphoLiquidateCallback {
         require(msg.sender == MORPHO_BLUE, "msg.sender should be Morpho Blue");
         _;
     }
-    
+
     // Still hesitant to go with the following implementation
     //     function _approveMaxTo(address asset, address spender) internal {
     //         if (ERC20(asset).allowance(address(this), spender) == 0) {
