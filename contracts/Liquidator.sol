@@ -72,11 +72,4 @@ contract Liquidator is IMorphoLiquidateCallback {
         require(msg.sender == MORPHO_BLUE, "msg.sender should be Morpho Blue");
         _;
     }
-
-    // Still hesitant to go with the following implementation
-    //     function _approveMaxTo(address asset, address spender) internal {
-    //         if (ERC20(asset).allowance(address(this), spender) == 0) {
-    //             ERC20(asset).safeApprove(spender, type(uint256).max);
-    //         }
-    //     }
 }
