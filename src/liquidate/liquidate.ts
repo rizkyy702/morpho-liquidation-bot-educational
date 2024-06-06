@@ -6,19 +6,13 @@ import {
   formatUnits,
   parseUnits,
 } from "ethers";
-import {
-  fetchAllLiquidatableUsersPositions,
-  getProvider,
-} from "../fetcher/fetch";
+import { fetchAllLiquidatableUsersPositions } from "../fetcher/fetch";
 import { compileBorrowersPerMarket } from "./borrowerFetcher";
 import {
   incentiveFactor,
   mulDivDown,
-  toAssetsUp,
   toAssetsDown,
   wMulDown,
-  mulDivUp,
-  wDivUp,
 } from "../utils/maths";
 import {
   LiquidatableUser,
@@ -31,25 +25,9 @@ import { ORACLE_PRICE_SCALE, WAD } from "../utils/constants";
 import { oneInchSwapCall } from "../oneInch/oneInch";
 import { sleep } from "../utils/sleep";
 import "dotenv/config";
-import { Liquidator__factory } from "../../typechain-types/factories/contracts/Liquidator__factory";
-import { fetchAssetData } from "../utils/queryAssets";
-
-export const getAddress = (): string => {
-  const { LIQUIDATOR_ADDRESS } = process.env;
-  if (!LIQUIDATOR_ADDRESS) {
-    throw new Error("No LIQUIDATOR_ADDRESS provided. Exiting...");
-  }
-  return LIQUIDATOR_ADDRESS;
-};
-
-export const getSigner = (provider?: Provider): Signer => {
-  const { PRIVATE_KEY } = process.env;
-  if (!PRIVATE_KEY) {
-    throw new Error("No PRIVATE_KEY in the environment variables. Exiting...");
-  }
-  provider = provider ?? getProvider();
-  return new ethers.Wallet(PRIVATE_KEY, provider);
-};
+import { Liquidator__factory } from "../../typechain-types/factories/artifacts/contracts/Liquidator__factory";
+import { fetchAssetData } from "../fetcher/queryAssets";
+import { getSigner, getAddress } from "../utils/envVariable";
 
 // in the case where there will be no bad debt, one should use repaid shares
 // in the case where there will be bad debt, one should use seize collateral
@@ -85,25 +63,28 @@ const computeSituation = (
     "%"
   );
 
-  const theoreticalSeizableCollateral = wMulDown(
+  const theoreticalSeizableCollateralQuotedInLoan = wMulDown(
     borrowerMaxAssets,
     liquidationIncentiveFactor
   );
 
-  const collatForLiquidator = mulDivDown(
-    theoreticalSeizableCollateral,
+  const theoreticalSeizableCollateral = mulDivDown(
+    theoreticalSeizableCollateralQuotedInLoan,
     ORACLE_PRICE_SCALE,
     collateralPrice
   );
 
-  console.log("Collateral seizable by the liquidator", collatForLiquidator);
+  console.log(
+    "Collateral seizable by the liquidator",
+    theoreticalSeizableCollateral
+  );
   console.log(
     "Collateral of the unhealthy borrower ",
     userPosition.collateral,
     ":\n"
   );
 
-  if (userPosition.collateral >= collatForLiquidator) {
+  if (userPosition.collateral >= theoreticalSeizableCollateral) {
     // Case 1:
     // The Liquidation Incentive Factor * RepaidAssets =< Collateral of the unhealthy position
     // Liquidator has to liquidate with `repaidShare`s, ensuring the entire debt is repaid as one can repay the whole debt.
@@ -113,11 +94,7 @@ const computeSituation = (
     );
     console.log("The liquidation will occur by repaying all borrow shares");
 
-    collateralToSwap = mulDivDown(
-      theoreticalSeizableCollateral,
-      ORACLE_PRICE_SCALE,
-      collateralPrice
-    );
+    collateralToSwap = theoreticalSeizableCollateral;
 
     maxShares = true;
   } else {
@@ -265,6 +242,7 @@ export const liquidateUsers = async (
     );
     const gainsUsdNormalized: string = formatUnits(gainsUsd, 18);
 
+    // Wait for 1 second to avoid rate limiting
     await sleep(1000);
 
     results.push({

@@ -25,3 +25,6 @@ export const ONE_INCH_ADDRESS_MAINNET =
 
 // Morpho Blue API endpoint
 export const BLUE_API = "https://blue-api.morpho.org/graphql";
+
+// Blocks
+export const MORPHO_BLUE_MAINNET_DEPLOYMENT_BLOCK = 18883124;

@@ -10,6 +10,7 @@ import {
   MAX_UINT256,
   MORPHO_ADDRESS,
   ORACLE_PRICE_SCALE,
+  WAD,
 } from "../utils/constants";
 
 import {
@@ -184,12 +185,8 @@ export const fetchAllUserData = async (
         userAddress
       );
 
-      if (
-        position_.supplyShares === 0n &&
-        position_.borrowShares === 0n &&
-        position_.collateral === 0n
-      ) {
-        return null; // Skip users with no position
+      if (position_.borrowShares === 0n) {
+        return null; // Skip users with no borrow position
       }
 
       const borrowAssetsUser = toAssetsUp(
@@ -276,7 +273,7 @@ export const fetchAllLiquidatableUsersPositions = async (
       return usersData
         .filter(
           (userData) =>
-            userData && parseFloat(userData.healthFactor.toString()) < 1e18
+            userData && parseFloat(userData.healthFactor.toString()) < WAD
         )
         .map((userData) => {
           if (!userData) return null;
